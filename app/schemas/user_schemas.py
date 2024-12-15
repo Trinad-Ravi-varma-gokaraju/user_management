@@ -82,9 +82,8 @@ class UserListResponse(BaseModel):
     page: int = Field(..., example=1)
     size: int = Field(..., example=10)
 
-
 class NicknameResponse(BaseModel):
     nickname: str
 
-class Config:
-    orm_mode = True
+    class Config:
+        orm_mode = True

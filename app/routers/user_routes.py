@@ -39,8 +39,8 @@ from io import BytesIO
 from app.models.user_model import User
 from pydantic import BaseModel
 import logging
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -257,6 +257,7 @@ async def verify_email(user_id: UUID, token: str, db: AsyncSession = Depends(get
 
 class NicknameUpdate(BaseModel):
     nickname: str
+
 @router.put("/users/me/nickname", response_model=NicknameResponse, tags=["User Management Requires (Authenticated User)"])
 async def update_nickname(
     nickname_update: NicknameUpdate,
@@ -264,25 +265,34 @@ async def update_nickname(
     db: AsyncSession = Depends(get_db)
 ):
     new_nickname = nickname_update.nickname
+
     # Fetch the current user's information
     user_id = current_user["user_id"]
     stmt = select(User).where(User.id == user_id)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
+
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
+
     # Check if the new nickname is the same as the current user's nickname
     if user.nickname == new_nickname:
         return NicknameResponse(nickname=user.nickname, message="You already updated your nickname with the same name")
+
     # Check if the new nickname is already taken by another user
     stmt = select(User).where(User.nickname == new_nickname)
     result = await db.execute(stmt)
     existing_user = result.scalar_one_or_none()
+
     if existing_user:
         raise HTTPException(status_code=400, detail="Nickname already taken")
+
     # Update the current user's nickname
     user.nickname = new_nickname
     db.add(user)
     await db.commit()
     await db.refresh(user)
+
     return NicknameResponse(nickname=user.nickname)
+
+

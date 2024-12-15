@@ -1,9 +1,9 @@
 from builtins import repr
 from datetime import datetime, timezone
+from sqlite3 import IntegrityError
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user_model import User, UserRole
-from sqlite3 import IntegrityError
 from app.utils.security import hash_password
 
 @pytest.mark.asyncio

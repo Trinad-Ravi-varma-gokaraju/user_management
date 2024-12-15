@@ -1,9 +1,9 @@
 # app/security.py
 from builtins import Exception, ValueError, bool, int, str
+import re
 import secrets
 import bcrypt
 from logging import getLogger
-import re
 
 # Set up logging
 logger = getLogger(__name__)
@@ -50,10 +50,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         logger.error("Error verifying password: %s", e)
         raise ValueError("Authentication process encountered an unexpected error") from e
 
-def generate_verification_token():
-    return secrets.token_urlsafe(16)  # Generates a secure 16-byte URL-safe token
-
-
 def validate_password_complexity(password: str) -> None:
     """
     Validates the complexity of a password.
@@ -73,3 +69,7 @@ def validate_password_complexity(password: str) -> None:
         raise ValueError("Password must contain at least one number.")
     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
         raise ValueError("Password must contain at least one special character.")
+
+
+def generate_verification_token():
+    return secrets.token_urlsafe(16)  # Generates a secure 16-byte URL-safe token

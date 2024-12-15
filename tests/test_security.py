@@ -1,7 +1,8 @@
 # test_security.py
 from builtins import RuntimeError, ValueError, isinstance, str
 import pytest
-from app.utils.security import hash_password, verify_password, validate_password_complexity
+from app.utils.security import hash_password, validate_password_complexity, verify_password
+from app.utils.security import hash_password, verify_password
 
 def test_hash_password():
     """Test that hashing password returns a bcrypt hashed string."""
@@ -65,7 +66,6 @@ def test_hash_password_internal_error(monkeypatch):
     with pytest.raises(ValueError):
         hash_password("test")
 
-
 def test_invalid_password_complexity():
     with pytest.raises(ValueError, match="Password must be at least 8 characters long."):
         validate_password_complexity("Short1!")
@@ -77,6 +77,7 @@ def test_invalid_password_complexity():
         validate_password_complexity("NoNumbers!")
     with pytest.raises(ValueError, match="Password must contain at least one special character."):
         validate_password_complexity("NoSpecial123")
+
 def test_valid_password_complexity():
     password = "Valid1Password!"
     assert validate_password_complexity(password) is None

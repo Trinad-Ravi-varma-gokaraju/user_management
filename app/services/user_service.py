@@ -10,7 +10,7 @@ from app.dependencies import get_email_service, get_settings
 from app.models.user_model import User
 from app.schemas.user_schemas import UserCreate, UserUpdate
 from app.utils.nickname_gen import generate_nickname
-from app.utils.security import generate_verification_token, hash_password, verify_password, validate_password_complexity
+from app.utils.security import generate_verification_token, hash_password, validate_password_complexity, verify_password
 from uuid import UUID
 from app.services.email_service import EmailService
 from app.models.user_model import UserRole
@@ -70,8 +70,8 @@ class UserService:
             if new_user.role == UserRole.ADMIN:
                 new_user.email_verified = True
 
+            
             new_user.verification_token = generate_verification_token()
-
             session.add(new_user)
             await session.commit()
             await email_service.send_verification_email(new_user)
@@ -200,7 +200,6 @@ class UserService:
             await session.commit()
             return True
         return False
-
 
 def is_profile_complete(user: User) -> bool:
     required_fields = ["first_name", "last_name", "email", "profile_picture_url"]

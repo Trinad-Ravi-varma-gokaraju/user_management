@@ -24,10 +24,13 @@ import csv
 from io import StringIO
 from typing import List
 from app.services.user_service import is_profile_complete
+
 logger = logging.getLogger(__name__)
+
 router = APIRouter()
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 settings = get_settings()
+
 @router.get("/users/me/check-profile-completion", response_model=UserResponse, tags=["User Management Requires (Authenticated User)"])
 async def check_profile_completion(
     db: AsyncSession = Depends(get_db),
@@ -38,10 +41,14 @@ async def check_profile_completion(
     stmt = select(User).where(User.id == user_id)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
+
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
+
     user.profile_complete = is_profile_complete(user)
+
     return user
+
 @router.post("/users/me/request-pro-role", tags=["User Management Requires (Authenticated User)"])
 async def request_pro_role(
     db: AsyncSession = Depends(get_db),
@@ -52,14 +59,19 @@ async def request_pro_role(
     stmt = select(User).where(User.id == user_id)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
+
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
+
     if not is_profile_complete(user):
         raise HTTPException(status_code=400, detail="Profile is not complete")
+
     if user.role in [UserRole.ADMIN, UserRole.MANAGER]:
         return {"message": "User already has a high-level role and cannot be assigned a pro role"}
+
     user.role = UserRole.PRO
     db.add(user)
     await db.commit()
     await db.refresh(user)
+
     return {"message": "User role updated to pro successfully", "new_role": user.role}

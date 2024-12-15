@@ -1,4 +1,3 @@
-from builtins import str
 import nltk
 from nltk.corpus import wordnet as wn
 import random
@@ -12,7 +11,7 @@ def get_words_by_pos(pos_tag):
     return {word for word in words if '_' not in word}
 
 def generate_nickname() -> str:
-    """Generate a URL-safe nickname using adjectives and animal names."""
+    """Generate a URL-safe nickname using verbs and animal names."""
     verbs = list(get_words_by_pos('v'))  # 'v' for verb
     nouns = list(get_words_by_pos('n'))  # 'n' for noun  # 'n' for noun (using nouns to represent animals here)
     number = random.randint(0, 999)
