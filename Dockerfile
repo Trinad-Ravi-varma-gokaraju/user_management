@@ -11,11 +11,11 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /myapp
 
-# Update system and install dependencies in a single RUN command
+# Update system and install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
-    libc-bin=2.36-9+deb12u7 \
+    libc-bin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -29,9 +29,9 @@ RUN python -m venv /.venv \
 # Final stage
 FROM python:3.12-slim-bookworm AS final
 
-# Upgrade libc-bin in the final stage
-RUN apt-get update && apt-get install -y --allow-downgrades \
-    libc-bin=2.36-9+deb12u7 \
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libc-bin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
