@@ -201,3 +201,11 @@ async def test_upload_invalid_file_type(async_client, user_token):
     response = await async_client.post("/users/me/upload-profile-picture", files=files, headers=headers)
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid file type. Only images are allowed."
+
+
+@pytest.mark.asyncio
+async def test_profile_picture_not_found(async_client, user_token):
+    headers = {"Authorization": f"Bearer {user_token}"}
+    response = await async_client.get("/users/me/profile-picture", headers=headers)
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Profile picture not found"
